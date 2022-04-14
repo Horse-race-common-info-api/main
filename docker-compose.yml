@@ -1,0 +1,19 @@
+version: '3'
+services:
+  web:
+    build:
+      context: ./web/
+      dockerfile: Dockerfile
+    ports:
+      - "3015:80"
+    volumes_from:
+      - api
+    depends_on:
+      - api
+  api:
+    build:
+      context: ./api/
+      dockerfile: Dockerfile
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s"
+    volumes:
+      - ./api:/myapp
