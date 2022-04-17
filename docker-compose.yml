@@ -17,3 +17,15 @@ services:
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s"
     volumes:
       - ./api:/myapp
+    networks:
+      - horse_race_common_info_network
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+
+networks:
+  horse_race_common_info_network:
+    external: true
