@@ -10,6 +10,7 @@ services:
       - api
     depends_on:
       - api
+
   api:
     build:
       context: ./api/
@@ -18,14 +19,41 @@ services:
     volumes:
       - ./api:/myapp
     networks:
-      - horse_race_common_info_network
+      default:
+      horse_race_common_info_network:
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_HOST=${MYSQL_HOST}
       - MYSQL_PORT=${MYSQL_PORT}
+      - TEST_MYSQL_DATABASE=${TEST_MYSQL_DATABASE}
+      - TEST_MYSQL_USER=${TEST_MYSQL_USER}
+      - TEST_MYSQL_PASSWORD=${TEST_MYSQL_PASSWORD}
+      - TEST_MYSQL_HOST=${TEST_MYSQL_HOST}
+      - TEST_MYSQL_PORT=${TEST_MYSQL_PORT}
+    stdin_open: true
+    tty: true
+    depends_on:
+      - test-db
+
+  test-db:
+    build:
+      context: ./api/test_db/
+      dockerfile: Dockerfile
+    volumes:
+      - horse-race-common-info-api-test-db-store:/var/lib/mysql
+      - ./api/test_db/initdb.d:/docker-entrypoint-initdb.d
+    platform: linux/amd64
+    environment:
+      - MYSQL_ROOT_PASSWORD=${TEST_MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${TEST_MYSQL_DATABASE}
+      - MYSQL_USER=${TEST_MYSQL_USER}
+      - MYSQL_PASSWORD=${TEST_MYSQL_PASSWORD}
 
 networks:
   horse_race_common_info_network:
     external: true
+
+volumes:
+  horse-race-common-info-api-test-db-store:
