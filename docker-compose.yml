@@ -27,6 +27,11 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_HOST=${MYSQL_HOST}
       - MYSQL_PORT=${MYSQL_PORT}
+      - API_DB_MYSQL_DATABASE=${API_DB_MYSQL_DATABASE}
+      - API_DB_MYSQL_USER=${API_DB_MYSQL_USER}
+      - API_DB_MYSQL_PASSWORD=${API_DB_MYSQL_PASSWORD}
+      - API_DB_MYSQL_HOST=${API_DB_MYSQL_HOST}
+      - API_DB_MYSQL_PORT=${API_DB_MYSQL_PORT}
       - TEST_MYSQL_DATABASE=${TEST_MYSQL_DATABASE}
       - TEST_MYSQL_USER=${TEST_MYSQL_USER}
       - TEST_MYSQL_PASSWORD=${TEST_MYSQL_PASSWORD}
@@ -36,6 +41,22 @@ services:
     tty: true
     depends_on:
       - test-db
+
+  api-db:
+    build:
+      context: ./db/
+      dockerfile: Dockerfile
+    volumes:
+      - horse-race-common-info-api-api-db-store:/var/lib/mysql
+      - ./db/initdb.d:/docker-entrypoint-initdb.d
+    platform: linux/amd64
+    environment:
+      - MYSQL_ROOT_PASSWORD=${API_DB_MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${API_DB_MYSQL_DATABASE}
+      - MYSQL_USER=${API_DB_MYSQL_USER}
+      - MYSQL_PASSWORD=${API_DB_MYSQL_PASSWORD}
+    ports:
+      - "3307:3307"
 
   test-db:
     build:
@@ -57,3 +78,4 @@ networks:
 
 volumes:
   horse-race-common-info-api-test-db-store:
+  horse-race-common-info-api-api-db-store:
